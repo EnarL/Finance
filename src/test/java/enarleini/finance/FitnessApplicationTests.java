@@ -1,4 +1,4 @@
-package enarleini.fitness;
+package enarleini.finance;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

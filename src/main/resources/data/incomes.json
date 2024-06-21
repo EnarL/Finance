@@ -1,0 +1,74 @@
+{
+  "incomes": [
+    {
+      "id": 1,
+      "username": "user1",
+      "amount": 500.00,
+      "source": "Salary",
+      "date": "2024-03-01"
+    },
+    {
+      "id": 2,
+      "username": "user2",
+      "amount": 300.00,
+      "source": "Freelance work",
+      "date": "2024-03-02"
+    },
+    {
+      "id": 3,
+      "username": "user3",
+      "amount": 200.00,
+      "source": "Investment returns",
+      "date": "2024-03-03"
+    },
+    {
+      "id": 4,
+      "username": "user4",
+      "amount": 1000.00,
+      "source": "Salary",
+      "date": "2024-03-04"
+    },
+    {
+      "id": 5,
+      "username": "user5",
+      "amount": 700.00,
+      "source": "Freelance work",
+      "date": "2024-03-05"
+    },
+    {
+      "id": 6,
+      "username": "user6",
+      "amount": 400.00,
+      "source": "Investment returns",
+      "date": "2024-03-06"
+    },
+    {
+      "id": 7,
+      "username": "user7",
+      "amount": 800.00,
+      "source": "Salary",
+      "date": "2024-03-07"
+    },
+    {
+      "id": 8,
+      "username": "user8",
+      "amount": 600.00,
+      "source": "Freelance work",
+      "date": "2024-03-08"
+    },
+    {
+      "id": 9,
+      "username": "user9",
+      "amount": 300.00,
+      "source": "Investment returns",
+      "date": "2024-03-09"
+    },
+    {
+      "id": 10,
+      "username": "user10",
+      "amount": 900.00,
+      "source": "Salary",
+      "date": "2024-03-10"
+    }
+  ]
+}
