@@ -2,6 +2,8 @@ package enarleini.finance.Client;
 
 import jakarta.validation.constraints.NotEmpty;
 
+
+
 public record Client(
         Integer id,
         @NotEmpty

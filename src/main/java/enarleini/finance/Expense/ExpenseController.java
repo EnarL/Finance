@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/expenses")
 public class ExpenseController {
 
@@ -33,7 +34,7 @@ public class ExpenseController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("/add")
     void create(@Valid @RequestBody Expense user) {
         userRepository.create(user);
     }
