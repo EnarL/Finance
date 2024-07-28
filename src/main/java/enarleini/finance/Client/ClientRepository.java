@@ -8,6 +8,8 @@ public interface ClientRepository {
 
     Optional<Client> findById(Integer id);
 
+    Optional<Client> findByUsername(String username);
+
     void create(Client run);
 
     void update(Client run, Integer id);

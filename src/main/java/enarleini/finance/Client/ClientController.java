@@ -34,7 +34,7 @@ public class ClientController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("/register")
     void create(@Valid @RequestBody Client user) {
         userRepository.create(user);
     }

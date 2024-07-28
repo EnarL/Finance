@@ -33,8 +33,8 @@ public class JdbcIncomeRepository implements IncomeRepository {
 
 
     public void create(Income users) {
-        var updated = jdbcClient.sql("INSERT INTO Income(id,username,amount,source,date) values(?,?,?,?,?)")
-                .params(List.of(users.id(),users.username(),users.amount(),users.source(), users.date()))
+        var updated = jdbcClient.sql("INSERT INTO Income(username,amount,source,date) values(?,?,?,?)")
+                .params(List.of(users.username(),users.amount(),users.source(), users.date()))
                 .update();
         Assert.state(updated == 1, "Failed to create user " + users.username());
     }

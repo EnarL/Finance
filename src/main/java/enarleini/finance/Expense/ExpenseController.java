@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/expenses")
+@CrossOrigin
 public class ExpenseController {
 
     private final JdbcExpenseRepository userRepository;
@@ -44,7 +44,7 @@ public class ExpenseController {
         userRepository.update(user, id);
     }
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     void delete(@PathVariable Integer id) {
         userRepository.delete(id);
     }

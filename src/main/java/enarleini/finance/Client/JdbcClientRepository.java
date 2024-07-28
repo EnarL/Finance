@@ -27,11 +27,17 @@ public class JdbcClientRepository implements ClientRepository {
                 .query(Client.class)
                 .optional();
     }
+    public Optional<Client> findByUsername(String username) {
+        return jdbcClient.sql("SELECT id,username,password,email FROM Client WHERE username = :username" )
+                .param("username", username)
+                .query(Client.class)
+                .optional();
+    }
 
 
     public void create(Client users) {
-        var updated = jdbcClient.sql("INSERT INTO Client(id,username,password,email) values(?,?,?,?)")
-                .params(List.of(users.id(),users.username(),users.password(),users.email()))
+        var updated = jdbcClient.sql("INSERT INTO Client(username,password,email) values(?,?,?)")
+                .params(List.of(users.username(),users.password(),users.email()))
                 .update();
         Assert.state(updated == 1, "Failed to create user " + users.username());
     }
