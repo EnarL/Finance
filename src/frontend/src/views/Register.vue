@@ -20,7 +20,8 @@ export default {
     return {
       username: '',
       email: '',
-      password: ''
+      password: '',
+      errorMessage: ''
     };
   },
   methods: {
@@ -38,7 +39,11 @@ export default {
         this.email = '';
         this.password = '';
       } catch (error) {
-        console.error('Error registering user:', error);
+        if (error.response && error.response.status === 401) {
+          this.errorMessage = 'Invalid username or password';
+        } else {
+          this.errorMessage = 'An error occurred';
+        }
       }
     }
   }

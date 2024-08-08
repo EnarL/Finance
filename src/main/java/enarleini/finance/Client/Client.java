@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 @Entity
 public record Client(
         @Id
-                @GeneratedValue
+        @GeneratedValue
         Integer id,
         @NotEmpty
         String username,

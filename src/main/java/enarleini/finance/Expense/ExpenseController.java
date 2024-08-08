@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,12 +19,17 @@ public class ExpenseController {
     public ExpenseController(JdbcExpenseRepository userRepository) {
         this.userRepository = userRepository;
     }
-
+    @GetMapping("/sum")
+    Optional<Integer> sumAllExpensesByMonth(@RequestParam String username, int month) {
+        return userRepository.sumAllExpensesByMonth(username, month);
+    }
 
     @GetMapping("/findall")
-    List<Expense> findAll() {
-        return userRepository.findAll();
+    List<Expense> findAll(@RequestParam String username) {
+        return userRepository.findAllByUsername(username);
     }
+
+
     @GetMapping("/{id}")
     Expense findById(@PathVariable Integer id){
         Optional<Expense> user = userRepository.findById(id);

@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +15,31 @@ public class JdbcExpenseRepository implements ExpenseRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<Expense> findAll() {
-        return jdbcClient.sql("select * from Expense")
+    public List<Expense> findAllByUsername(String username) {
+        return jdbcClient.sql("SELECT * FROM Expense WHERE username = :username")
+                .param("username", username)
                 .query(Expense.class)
                 .list();
     }
+    public Optional<Integer> sumAllExpensesByMonth(String username,int month) {
+        try {
+            String sql = "SELECT SUM(amount) FROM Expense WHERE username = :username AND EXTRACT(MONTH FROM date) = :month";
 
+
+            Integer result = jdbcClient.sql(sql)
+                    .param("username", username)
+                    .param("month", month)
+                    .query(Integer.class)
+                    .list()
+                    .stream()
+                    .findFirst()
+                    .orElse(0); // default to 0 if no result
+
+            return Optional.of(result);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 
     public Optional<Expense> findById(Integer id) {
         return jdbcClient.sql("SELECT id,username,amount,category,description,date FROM Expense WHERE id = :id" )
@@ -29,12 +49,14 @@ public class JdbcExpenseRepository implements ExpenseRepository {
     }
 
 
+
     public void create(Expense users) {
         var updated = jdbcClient.sql("INSERT INTO Expense(username,amount,category,description,date) values(?,?,?,?,?)")
                 .params(List.of(users.username(),users.amount(),users.category(),users.description(), users.date()))
                 .update();
         Assert.state(updated == 1, "Failed to create user " + users.username());
     }
+
 
 
     public void update(Expense users, Integer id) {

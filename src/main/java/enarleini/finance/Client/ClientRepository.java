@@ -1,5 +1,8 @@
 package enarleini.finance.Client;
 
+import enarleini.finance.Expense.Expense;
+import enarleini.finance.Income.Income;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +21,7 @@ public interface ClientRepository {
 
     int count();
 
+    void changePassword(Integer id, String newPassword);
 
     void saveAll(List<Client> users);
 }

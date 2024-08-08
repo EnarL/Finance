@@ -1,10 +1,12 @@
 package enarleini.finance.Income;
 
+import enarleini.finance.Expense.Expense;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +23,8 @@ public class IncomeController {
 
 
     @GetMapping("/findall")
-    List<Income> findAll() {
-        return userRepository.findAll();
+    List<Income> findAll(@RequestParam String username) {
+        return userRepository.findAllByUsername(username);
     }
     @GetMapping("/{id}")
     Income findById(@PathVariable Integer id){
@@ -31,6 +33,10 @@ public class IncomeController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
         }
         return user.get();
+    }
+    @GetMapping("/sum")
+    Optional<Integer> sumAllIncomesByMonth(@RequestParam String username, int month) {
+        return userRepository.sumAllIncomesByMonth(username, month);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

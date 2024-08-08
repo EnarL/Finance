@@ -1,10 +1,13 @@
 package enarleini.finance.Expense;
 
+import org.springframework.data.jdbc.repository.query.Query;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface ExpenseRepository {
-    List<Expense> findAll();
+    List<Expense> findAllByUsername(String username);
 
     Optional<Expense> findById(Integer id);
 
@@ -16,6 +19,11 @@ public interface ExpenseRepository {
 
     int count();
 
-
     void saveAll(List<Expense> users);
-}
+
+    Optional<Integer> sumAllExpensesByMonth(String username, int month);
+
+
+
+    }
+

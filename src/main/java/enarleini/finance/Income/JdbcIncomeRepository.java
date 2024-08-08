@@ -3,10 +3,12 @@ package enarleini.finance.Income;
 
 
 
+import enarleini.finance.Expense.Expense;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +19,30 @@ public class JdbcIncomeRepository implements IncomeRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<Income> findAll() {
-        return jdbcClient.sql("select * from Income")
+    public List<Income> findAllByUsername(String username) {
+        return jdbcClient.sql("SELECT * FROM Income WHERE username = :username")
+                .param("username", username)
                 .query(Income.class)
                 .list();
+    }
+    public Optional<Integer> sumAllIncomesByMonth(String username,int month) {
+        try {
+            String sql = "SELECT SUM(amount) FROM Income WHERE username = :username AND EXTRACT(MONTH FROM date) = :month";
+
+
+            Integer result = jdbcClient.sql(sql)
+                    .param("username", username)
+                    .param("month", month)
+                    .query(Integer.class)
+                    .list()
+                    .stream()
+                    .findFirst()
+                    .orElse(0); // default to 0 if no result
+
+            return Optional.of(result);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
 
