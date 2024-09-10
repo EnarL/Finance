@@ -2,15 +2,23 @@
   <div class="login-container">
     <h2>Login</h2>
     <form @submit.prevent="login">
-      <div>
+      <div class="form-group">
         <label for="username">Username:</label>
         <input type="text" v-model="username" id="username" required>
       </div>
-      <div>
+      <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" v-model="password" id="password" required>
+        <div class="password-input">
+          <input :type="passwordFieldType" v-model="password" id="password" required>
+          <span @click="togglePasswordVisibility" class="toggle-password">
+            {{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}
+          </span>
+        </div>
       </div>
-      <button type="submit">Login</button>
+      <button type="submit" :disabled="loading">
+        <span v-if="loading" class="spinner"></span>
+        <span v-else>Login</span>
+      </button>
     </form>
     <p v-if="errorMessage">{{ errorMessage }}</p>
     <button class="register-button" @click="goToRegister">Register</button>
@@ -27,26 +35,40 @@ export default {
     return {
       username: '',
       password: '',
-      errorMessage: ''
+      errorMessage: '',
+      loading: false,
+      passwordFieldType: 'password'
     };
   },
   methods: {
     async login() {
+      this.loading = true;
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/login', {
+        const response = await axios.post('http://localhost:8080/login', {
           username: this.username,
           password: this.password
         });
-        alert(response.data); // or handle the response as needed
+
         localStorage.setItem('username', this.username);
-        await this.$router.push('/dashboard'); // Redirect to Dashboard.vue
+        alert(response.data);
+
+        const response2 = await axios.get(`http://localhost:8080/api/clients/username/${this.username}`);
+        const userId = response2.data.id;
+
+        localStorage.setItem('id', userId);
+        await this.$router.push('/dashboard');
       } catch (error) {
         if (error.response && error.response.status === 401) {
           this.errorMessage = 'Invalid username or password';
         } else {
           this.errorMessage = 'An error occurred';
         }
+      } finally {
+        this.loading = false;
       }
+    },
+    togglePasswordVisibility() {
+      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },
     goToRegister() {
       this.$router.push('/register');
@@ -57,27 +79,54 @@ export default {
 
 <style scoped>
 .login-container {
-  max-width: 300px;
+  min-width: 400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
   border: 1px solid #ccc;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-form div {
-  margin-bottom: 10px;
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
+  color: #555;
 }
 
 input {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   box-sizing: border-box;
+}
+
+.password-input {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #007BFF;
 }
 
 button {
@@ -88,14 +137,44 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
 }
 
-button:hover {
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
   background-color: #0056b3;
+}
+
+.spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007BFF;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 p {
   color: red;
   text-align: center;
+  margin-top: 10px;
+}
+
+.register-button {
+  margin-top: 10px;
+  background-color: #28a745;
+}
+
+.register-button:hover {
+  background-color: #218838;
 }
 </style>

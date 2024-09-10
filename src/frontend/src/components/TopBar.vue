@@ -1,42 +1,60 @@
+// src/components/TopBar.vue
 <template>
   <div class="top-bar">
     <div class="actions">
       <div class="icons">
-
         <span @click="toggleDropdown"><img src="@/assets/notification-bell.svg" alt="notification-bell" class="img"></span>
         <div v-if="showDropdown" class="dropdown-menu">
-          <p>No notifications right now</p>
+          <div class="notifications">
+            <Notification
+                v-for="(notification, index) in notifications"
+                :key="index"
+                :message="notification"
+                @close="removeNotification(notification)"
+            />
+          </div>
           <TransactionList></TransactionList>
         </div>
       </div>
       <UserIcon></UserIcon>
     </div>
+    <div class="notifications">
+      <Notification
+          v-for="(notification, index) in notifications"
+          :key="index"
+          :message="notification"
+          @close="removeNotification(notification)"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import UserIcon from '@/components/UserIcon.vue';
 import TransactionList from "@/components/TransactionList.vue";
+import Notification from "@/components/Notification.vue";
 
 export default {
   name: 'TopBar',
   components: {
     UserIcon,
-    TransactionList
+    TransactionList,
+    Notification
   },
   data() {
     return {
       showDropdown: false
     };
   },
-
+  computed: {
+    ...mapState(['notifications'])
+  },
   methods: {
-    ...mapActions(['toggleTheme']),
+    ...mapActions(['toggleTheme', 'removeNotification']),
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
-    },
-
+    }
   }
 };
 </script>
@@ -117,5 +135,12 @@ button:hover {
 
 .dropdown-menu button:hover {
   background-color: #f1f1f1;
+}
+
+.notifications {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
 }
 </style>

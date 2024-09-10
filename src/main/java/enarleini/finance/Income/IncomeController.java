@@ -1,7 +1,9 @@
 package enarleini.finance.Income;
 
-import enarleini.finance.Expense.Expense;
+import enarleini.finance.Expense.ExpenseService;
+import enarleini.finance.Expense.Expenses;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,48 +14,43 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/incomes")
-@CrossOrigin
+
 public class IncomeController {
 
-    private final JdbcIncomeRepository userRepository;
-
-    public IncomeController(JdbcIncomeRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private IncomeService service;
 
 
     @GetMapping("/findall")
-    List<Income> findAll(@RequestParam String username) {
-        return userRepository.findAllByUsername(username);
+    List<Incomes> findAll(@RequestParam String username) {
+        return service.findAllByUsername(username);
     }
+
+
     @GetMapping("/{id}")
-    Income findById(@PathVariable Integer id){
-        Optional<Income> user = userRepository.findById(id);
-        if (user.isEmpty()){
+    Incomes findById(@PathVariable Long id) {
+        Optional<Incomes> user = service.findById(id);
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
         }
         return user.get();
     }
-    @GetMapping("/sum")
-    Optional<Integer> sumAllIncomesByMonth(@RequestParam String username, int month) {
-        return userRepository.sumAllIncomesByMonth(username, month);
-    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/add")
-    void create(@Valid @RequestBody Income user) {
-        userRepository.create(user);
+    void create(@Valid @RequestBody Incomes user) {
+        service.create(user);
     }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    void update(@Valid @RequestBody Income user, @PathVariable Integer id) {
-        userRepository.update(user, id);
+    void update(@Valid @RequestBody Incomes user, @PathVariable Long id) {
+        service.update(user, id);
     }
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete/{id}")
-    void delete(@PathVariable Integer id) {
-        userRepository.delete(id);
+    void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
-
-

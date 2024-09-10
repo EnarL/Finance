@@ -9,6 +9,7 @@
     </ul>
   </nav>
   <div :class="['dashboard', { 'black-theme': isBlackTheme }]">
+
     <MonthlyBarChart :expenses="expenses" :incomes="incomes"></MonthlyBarChart>
 
   </div>

@@ -5,7 +5,7 @@
       <p>Please enter your password to confirm:</p>
       <input type="password" v-model="passwordForDeletion" class="input" />
       <div class="modal-actions">
-        <button @click="handleDeleteAccount" class="py-2 px-4 bg-red-600 text-white rounded-md">Confirm</button>
+        <button @click="deleteAccount" class="py-2 px-4 bg-red-600 text-white rounded-md">Confirm</button>
         <button @click="closeModal" class="py-2 px-4 bg-gray-600 text-white rounded-md">Cancel</button>
       </div>
     </div>
@@ -23,30 +23,29 @@ export default {
   },
   data() {
     return {
-      passwordForDeletion: ''
+      passwordForDeletion: '',
+      id: localStorage.getItem('id')
     };
   },
   methods: {
-    async handleDeleteAccount() {
+    async deleteAccount() {
+      const clientsId = localStorage.getItem('id');
       try {
-        const userId = 8; // Replace with actual user ID
-        const response = await fetch(`http://localhost:8080/api/clients/${userId}`, {
+        const response = await fetch(`http://localhost:8080/api/clients/delete/${clientsId}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.passwordForDeletion}`
           }
         });
-
         if (response.ok) {
-          console.log('Account deleted successfully');
-          this.$emit('delete-account', this.passwordForDeletion);
+          localStorage.removeItem('id');
+          localStorage.removeItem('username');
+          await this.$router.push('/');
         } else {
-          console.error('Failed to delete account');
+          throw new Error('Network response was not ok.');
         }
       } catch (error) {
         console.error('Error deleting account:', error);
-      } finally {
-        this.closeModal();
       }
     },
     closeModal() {

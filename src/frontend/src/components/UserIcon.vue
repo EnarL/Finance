@@ -23,6 +23,7 @@ export default {
     },
     logout() {
       localStorage.removeItem('username');
+      localStorage.removeItem('id');
       this.$router.push('/');
     },
     openSettings() {

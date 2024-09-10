@@ -4,6 +4,8 @@ import Dashboard from '../views/Dashboard.vue';
 import Register from '../views/Register.vue';
 import Settings from "../views/Settings.vue";
 import Monthly from "../views/Monthly.vue";
+import Expenses from "../views/Expenses.vue";
+import Incomes from "../views/Incomes.vue";
 const routes = [
     {
         path: '/',
@@ -29,6 +31,16 @@ const routes = [
         path: '/Monthly',
         name: 'Monthly',
         component: Monthly
+    },
+    {
+        path: '/expenses',
+        name: 'Expenses',
+        component: Expenses
+    },
+    {
+        path: '/incomes',
+        name: 'Incomes',
+        component: Incomes
     }
 ];
 

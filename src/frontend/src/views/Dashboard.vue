@@ -4,7 +4,7 @@
       <li><a href="/dashboard">Dashboard</a></li>
       <li><a href="/Monthly">Monthly Overview</a></li>
       <li><a href="/incomes">Incomes</a></li>
-      <li><a href="/" @click="logout">Logout</a></li>
+      <li><a href="/expenses">Expenses</a></li>
     </ul>
   </nav>
   <div :class="['dashboard', { 'black-theme': isBlackTheme }]">
@@ -44,6 +44,7 @@ export default {
       loading: true,
       error: null,
       username: localStorage.getItem('username'),
+      id: localStorage.getItem('id'),
       isBlackTheme: JSON.parse(localStorage.getItem('isBlackTheme')) || false,
     };
   },
@@ -104,6 +105,7 @@ export default {
           })
           .then(data => {
             this.expenses.push(data);
+            this.$store.dispatch('addNotification', `You just added expense: ${data.amount}`);
           })
           .catch(error => {
             console.error('Error adding expense:', error);

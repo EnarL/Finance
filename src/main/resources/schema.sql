@@ -1,11 +1,14 @@
 
 CREATE TABLE Client(
-    id SERIAL PRIMARY KEY,
+    userID SERIAL PRIMARY KEY,
     username varchar(250) NOT NULL,
     password varchar(250) NOT NULL,
     email varchar(250) NOT NULL,
-    version INT
+    role varchar(250) NOT NULL
+
 );
+
+
 CREATE TABLE Expense(
     id SERIAL PRIMARY KEY,
     username varchar(250) NOT NULL,

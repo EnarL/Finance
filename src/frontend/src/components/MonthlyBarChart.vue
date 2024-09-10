@@ -19,6 +19,7 @@ export default {
   },
   mounted() {
     this.updateMonthlyExpensesChart();
+
   },
   watch: {
     expenses: 'updateMonthlyExpensesChart'

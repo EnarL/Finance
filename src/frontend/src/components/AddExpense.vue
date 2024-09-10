@@ -43,6 +43,7 @@ export default {
           .then(response => response.json())
           .then(data => {
             console.log('Expense added:', data);
+
           })
           .catch(error => {
             console.error('Error adding expense:', error);
