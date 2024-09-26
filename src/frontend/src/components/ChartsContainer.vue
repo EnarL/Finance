@@ -146,7 +146,7 @@ export default {
             },
             tooltip: {
               callbacks: {
-                label: function(tooltipItem) {
+                label: function (tooltipItem) {
                   return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2);
                 }
               }

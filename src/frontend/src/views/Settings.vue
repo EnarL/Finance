@@ -1,13 +1,37 @@
 <script setup>
-import { ref } from 'vue';
 import { useDark, useToggle } from "@vueuse/core";
-import ChangePasswordModel from "@/components/ChangePasswordModel.vue";
+import { ref } from "vue";
+import { useStore } from "vuex";
+import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteAccount from "@/components/DeleteAccount.vue";
 
+
+const showChangePasswordModel = ref(false);
+const showDeleteAccountModel = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
-const showChangePasswordModal = ref(false);
-const showDeleteAccountModal = ref(false);
+const store = useStore();
+
+const changePassword = async (currentPassword, newPassword) => {
+  try {
+    await store.dispatch('user/changePassword', { currentPassword, newPassword });
+    showChangePasswordModel.value = false;
+  } catch (error) {
+    console.error('Error changing password:', error);
+  }
+};
+
+const deleteAccount = async () => {
+  try {
+    await store.dispatch('user/deleteUser');
+    showDeleteAccountModel.value = false;
+  } catch (error) {
+    console.error('Error deleting account:', error);
+  }
+};
+
+
+
 </script>
 
 <template>
@@ -35,24 +59,23 @@ const showDeleteAccountModal = ref(false);
         </button>
       </div>
       <div class="settings-item mb-4">
+        <label class="text-md dark:text-white">Delete Account</label>
+        <button @click = "showDeleteAccountModel = true"
+            class="py-2 px-4 bg-red-500 text-white rounded-md dark:bg-white dark:text-black">
+          Delete Account
+        </button>
+      </div>
+      <div class="settings-item mb-4">
         <label class="text-md dark:text-white">Change Password</label>
-        <button @click="showChangePasswordModal = true"
+        <button @click="showChangePasswordModel = true"
                 class="py-2 px-4 bg-black text-white rounded-md dark:bg-white dark:text-black">
           Change Password
         </button>
       </div>
-      <div class="settings-item mb-4">
-        <label class="text-md dark:text-white">Delete Account</label>
-        <button @click="showDeleteAccountModal = true"
-                class="py-2 px-4 bg-red-600 text-white rounded-md dark:bg-red-800 dark:text-white">
-          Delete Account
-        </button>
-      </div>
     </div>
-    <ChangePasswordModel :show="showChangePasswordModal" @close="showChangePasswordModal = false"
-                         @change-password="handlePasswordChange"/>
-    <DeleteAccount :show="showDeleteAccountModal" @close="showDeleteAccountModal = false"
-                   @delete-account="handleDeleteAccount"/>
+
+    <DeleteAccount :show="showDeleteAccountModel" @close="showDeleteAccountModel = false" @delete-account="deleteAccount"/>
+    <ChangePassword :show="showChangePasswordModel" @close="showChangePasswordModel = false" @change-password="changePassword" />
   </main>
 </template>
 
@@ -76,6 +99,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 button {
@@ -83,6 +107,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: 1rem;
 }
 
 button:hover {
@@ -95,36 +120,15 @@ button:active {
   transform: translateY(0);
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
+form {
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-
-.input {
+input {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
 }
 </style>

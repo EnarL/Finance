@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: 'ChangePasswordModal',
+  name: 'ChangePassword',
   props: {
     show: {
       type: Boolean,
@@ -41,21 +41,20 @@ export default {
     };
   },
   methods: {
-    changePassword() {
+    async changePassword() {
       if (this.newPassword !== this.confirmPassword) {
         alert('New passwords do not match');
         return;
       }
-      if (this.currentPassword === this.newPassword){
-        alert('New password must be different')
+      if (this.currentPassword === this.newPassword) {
+        alert('New password must be different');
         return;
       }
-      // Logic to change the password
-      this.$emit('change-password', {
-        currentPassword: this.currentPassword,
-        newPassword: this.newPassword
-      });
-      this.closeModal();
+      try {
+        this.$emit('change-password', this.currentPassword, this.newPassword);
+      } catch (error) {
+        alert('Failed to change password');
+      }
     },
     closeModal() {
       this.$emit('close');

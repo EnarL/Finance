@@ -2,18 +2,23 @@ package enarleini.finance.Income;
 
 import enarleini.finance.Expense.ExpenseService;
 import enarleini.finance.Expense.Expenses;
+import enarleini.finance.config.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/incomes")
+@CrossOrigin(origins = "http://localhost:8081")
+@RequestMapping("/incomes")
 
 public class IncomeController {
 
@@ -21,12 +26,14 @@ public class IncomeController {
     private IncomeService service;
 
 
+
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     @GetMapping("/findall")
     List<Incomes> findAll(@RequestParam String username) {
         return service.findAllByUsername(username);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).get().getUsername() == authentication.principal.username")
     @GetMapping("/{id}")
     Incomes findById(@PathVariable Long id) {
         Optional<Incomes> user = service.findById(id);
@@ -53,4 +60,12 @@ public class IncomeController {
     void delete(@PathVariable Long id) {
         service.delete(id);
     }
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
+    @GetMapping("/sum")
+    public BigDecimal sumIncomesByMonth(@RequestParam String username, @RequestParam String month){
+        return service.sumIncomesByMonth(username, YearMonth.parse(month));
+    }
+
+
+
 }

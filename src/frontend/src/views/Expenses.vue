@@ -17,12 +17,11 @@
 <script>
 
 
-import MonthlyBarChart from "@/components/MonthlyBarChart.vue";
+import MonthlyBarChart from "@/components/LineChart.vue";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Dashboard',
   components: {
-
     MonthlyBarChart,
   },
   data() {
@@ -55,7 +54,7 @@ export default {
     async fetchExpensesData() {
       const username = this.username;
       try {
-        const response = await fetch(`http://localhost:8080/api/expenses/findall?username=${username}`);
+        const response = await fetch(`http://localhost:8080/expenses/findall?username=${username}`);
         if (!response.ok) throw new Error('Failed to fetch expenses');
         this.expenses = await response.json();
       } catch (error) {
@@ -66,7 +65,7 @@ export default {
     async fetchIncomeData() {
       const username = this.username;
       try {
-        const response = await fetch(`http://localhost:8080/api/incomes/findall?username=${username}`);
+        const response = await fetch(`http://localhost:8080/incomes/findall?username=${username}`);
         if (!response.ok) throw new Error('Failed to fetch incomes');
         this.incomes = await response.json();
       } catch (error) {

@@ -32,7 +32,7 @@ export default {
         password: this.password
       };
       try {
-        const response = await axios.post('http://localhost:8080/api/auth/register', newUser);
+        const response = await axios.post('http://localhost:8080/register', newUser);
         console.log('User registered:', response.data);
         // Reset form fields
         this.username = '';

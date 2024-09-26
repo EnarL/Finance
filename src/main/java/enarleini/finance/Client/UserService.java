@@ -1,19 +1,20 @@
 package enarleini.finance.Client;
 
 import enarleini.finance.config.JWTService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 @Service
 public class UserService {
@@ -26,48 +27,56 @@ public class UserService {
 
     @Autowired
     AuthenticationManager authManager;
-   private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     public Users register(Users user) {
       user.setPassword(encoder.encode(user.getPassword()));
-      user.setRole("USER");
-        return repository.save(user);
+      user.setRole(Roles.USER);
+      return repository.save(user);
     }
-    public String verify(Users user) {
+
+    public Map<String, String> verify(Users user) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        String token = "";
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(user.getUsername())  ;
+            token = jwtService.generateToken(user.getUsername());
         } else {
-            return "fail";
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Credentials");
         }
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        return response;
     }
+    //String token = service.verify(user);
+    //        if (token == null) {
+    //            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
+    //        }
+    //        Map<String, String> response = new HashMap<>();
+    //        response.put("token", token);
+    //        return response;
 
     public List<Users> findAllClients() {
         return repository.findAll();
     }
 
-    public Optional<Users> findClientById(Long id) {
-        return repository.findById(id);
+    public Users findClientById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found."));
     }
 
     public Users findClientByUsername(String username) {
         return repository.findByUsername(username);
     }
 
-    public void createClient(Users client) {
-        client.setPassword((client.getPassword()));
-        repository.save(client);
-    }
-
     public void updateClient(Users client, Long id) {
-        Optional<Users> existingClient = findClientById(id);
-        if (existingClient.isPresent()) {
-            Users updatedClient = existingClient.get();
-            updatedClient.setUsername(client.getUsername());
-            updatedClient.setEmail(client.getEmail());
+        Users existingClient = findClientById(id);
+        if (existingClient!=null) {
+            existingClient.setUsername(client.getUsername());
+            existingClient.setEmail(client.getEmail());
             if (client.getPassword() != null && !client.getPassword().isEmpty()) {
-                updatedClient.setPassword(client.getPassword());
+                existingClient.setPassword(client.getPassword());
             }
-            repository.save(updatedClient);
+            repository.save(existingClient);
         } else {
             throw new IllegalArgumentException("Client with ID " + id + " not found");
         }
@@ -77,18 +86,27 @@ public class UserService {
         repository.deleteById(id);
     }
 
-    public void changeClientPassword(Long id, String currentPassword, String newPassword) {
-        Optional<Users> existingClient = findClientById(id);
-        if (existingClient.isPresent()) {
-            Users client = existingClient.get();
-            if (Objects.equals(currentPassword, client.getPassword())) {
-                client.setPassword(newPassword);
-                repository.save(client);
+    public void changeClientPassword(String username, String currentPassword, String newPassword) {
+        Users existingClient = findClientByUsername(username);
+        if (existingClient != null) {
+            if (encoder.matches(currentPassword, existingClient.getPassword())) {
+                existingClient.setPassword(encoder.encode(newPassword));
+                repository.save(existingClient);
             } else {
-                throw new RuntimeException("Current password is incorrect");
+                throw new RuntimeException("Current password is incorrect ");
             }
         } else {
-            throw new IllegalArgumentException("Client with ID " + id + " not found");
+            throw new IllegalArgumentException("Client with username " + username + " not found");
+        }
+    }
+
+    public void assignRoleToUser(String username, Roles role) {
+        Users user = repository.findByUsername(username);
+        if (user != null) {
+            user.setRole(role);
+            repository.save(user);
+        } else {
+            throw new IllegalArgumentException("User with username " + username + " not found");
         }
     }
 }

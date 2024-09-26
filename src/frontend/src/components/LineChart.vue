@@ -1,7 +1,7 @@
 <template>
   <div class="charts-container">
     <div class="chart-card">
-      <h2>Monthly Expenses Bar Chart</h2>
+      <h2>Monthly Expenses Line Chart</h2>
       <canvas id="monthlyExpensesChart"></canvas>
     </div>
   </div>
@@ -13,13 +13,13 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 export default {
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'ChartsContainer',
   props: {
     expenses: Array
   },
   mounted() {
     this.updateMonthlyExpensesChart();
-
   },
   watch: {
     expenses: 'updateMonthlyExpensesChart'
@@ -39,41 +39,71 @@ export default {
         return acc;
       }, {});
 
-      const months = Object.keys(monthData).map(month => new Date(0, month).toLocaleString('default', {month: 'long'}));
+      const months = Object.keys(monthData).map(month => new Date(0, month).toLocaleString('default', { month: 'long' }));
       const amounts = Object.values(monthData);
 
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, 'rgba(0, 0, 139, 0.5)');
+      gradient.addColorStop(1, 'rgba(0, 0, 139, 0)');
+
       this.monthlyExpensesChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: months,
           datasets: [{
             label: 'Expenses',
             data: amounts,
-            backgroundColor: 'darkblue',
-           borderColor: 'green',
-            borderWidth:1
+            borderColor: 'darkblue',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4, // Smooth curves
+            pointBackgroundColor: 'darkblue',
+            pointBorderColor: 'white',
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: 'white',
+            pointHoverBorderColor: 'darkblue',
+            pointRadius: 3,
+            pointHitRadius: 10
           }]
         },
         options: {
           scales: {
+            x: {
+              grid: {
+                display: false
+              }
+            },
             y: {
-              beginAtZero: true
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(200, 200, 200, 0.2)'
+              }
             }
           },
           responsive: true,
           plugins: {
             legend: {
-            //  position: 'top',
-              display:false,
+              display: true,
+              position: 'top',
+              labels: {
+                color: 'darkblue'
+              }
             },
             title: {
               display: true,
-            //  text: 'Monthly.vue Expenses by Month'
+              text: 'Monthly Expenses by Month',
+              color: 'darkblue',
+              font: {
+                size: 18
+              }
             },
             tooltip: {
+              backgroundColor: 'rgba(0, 0, 139, 0.8)',
+              titleColor: 'white',
+              bodyColor: 'white',
               callbacks: {
                 label: function (tooltipItem) {
-                  return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2);
+                  return tooltipItem.label + ': $' + tooltipItem.raw.toFixed(2);
                 }
               }
             }
@@ -87,20 +117,16 @@ export default {
 
 <style scoped>
 .charts-container {
-
-  width:75%;
+  width: 75%;
   margin: 0 auto;
-
-
 }
 
 .chart-card {
-
-
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
   transition: transform 0.3s ease;
+  background-color: white;
+  padding: 20px;
 }
 
 .chart-card:hover {

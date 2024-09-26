@@ -1,7 +1,7 @@
-// src/components/TopBar.vue
 <template>
   <div class="top-bar">
     <div class="actions">
+      <button @click="goToDashboard" class="home-button">Home</button>
       <div class="icons">
         <span @click="toggleDropdown"><img src="@/assets/notification-bell.svg" alt="notification-bell" class="img"></span>
         <div v-if="showDropdown" class="dropdown-menu">
@@ -54,6 +54,9 @@ export default {
     ...mapActions(['toggleTheme', 'removeNotification']),
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
+    },
+    goToDashboard() {
+      this.$router.push('/dashboard');
     }
   }
 };
@@ -73,6 +76,19 @@ export default {
 .actions {
   display: flex;
   align-items: center;
+}
+
+.home-button {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.home-button:hover {
+  text-decoration: underline;
 }
 
 .icons {

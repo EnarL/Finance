@@ -16,12 +16,10 @@ import java.time.LocalDate;
 @Table(name = "Expense")
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Expenses{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @NotEmpty
     String username;
     BigDecimal amount;
     String category;

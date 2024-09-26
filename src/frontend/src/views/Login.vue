@@ -37,25 +37,27 @@ export default {
       password: '',
       errorMessage: '',
       loading: false,
-      passwordFieldType: 'password'
+      passwordFieldType: 'password',
+      token: ''
     };
   },
   methods: {
-    async login() {
+    async login()
+    {
       this.loading = true;
       try {
         const response = await axios.post('http://localhost:8080/login', {
           username: this.username,
           password: this.password
         });
-
+        const token = response.data.token;
+        console.log(token);
         localStorage.setItem('username', this.username);
-        alert(response.data);
+        localStorage.setItem('token', token)
 
-        const response2 = await axios.get(`http://localhost:8080/api/clients/username/${this.username}`);
-        const userId = response2.data.id;
 
-        localStorage.setItem('id', userId);
+
+
         await this.$router.push('/dashboard');
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -66,7 +68,8 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
+    }
+,
     togglePasswordVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },
@@ -76,7 +79,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .login-container {
   min-width: 400px;

@@ -24,6 +24,7 @@ export default {
     logout() {
       localStorage.removeItem('username');
       localStorage.removeItem('id');
+      localStorage.removeItem('token');
       this.$router.push('/');
     },
     openSettings() {

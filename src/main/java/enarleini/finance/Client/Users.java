@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.Set;
-
 @Entity
 @Data
 @ToString
@@ -25,7 +22,11 @@ public class Users {
         private String password;
         @NotEmpty(message = "Email is required")
         private String email;
-        private String role;
+        @Enumerated(EnumType.STRING)
+        private Roles role;
+
+
+
 
 
 

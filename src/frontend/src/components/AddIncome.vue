@@ -31,7 +31,8 @@ export default {
       this.newIncome = {
         amount: null,
         source: '',
-        date: ''
+        date: new Date().toISOString().split('T')[0],
+
       };
     }
   }

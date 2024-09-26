@@ -7,48 +7,40 @@
       <li><a href="/expenses">Expenses</a></li>
     </ul>
   </nav>
-  <div :class="['dashboard']">
-    <LineChart :expenses="expenses" :incomes="incomes"></LineChart>
+  <div :class="['dashboard', { 'black-theme': isBlackTheme }]">
+    <MonthlyBarChart :expenses="expenses" :incomes="incomes"></MonthlyBarChart>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import LineChart from "@/components/LineChart.vue";
+import MonthlyBarChart from "@/components/LineChart.vue";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Dashboard',
+  name: 'Incomes',
   components: {
-    LineChart
+    MonthlyBarChart,
   },
   computed: {
-    ...mapState({
-      expenses: state => state.expenses.expenses,
-      incomes: state => state.incomes.incomes,
-      loading: state => state.expenses.loading || state.incomes.loading,
-      error: state => state.expenses.error || state.incomes.error,
-      username: state => state.user.username,
-      id: state => state.user.id,
-      token: state => state.user.token
-    })
+    ...mapState(['expenses', 'incomes', 'loading', 'error', 'username', 'isBlackTheme'])
   },
   mounted() {
     this.fetchData();
   },
   methods: {
-    ...mapActions({
-      fetchExpenses: 'expenses/fetchExpenses',
-      fetchIncomes: 'incomes/fetchIncomes',
-      deleteExpense: 'expenses/deleteExpense',
-      deleteIncome: 'incomes/deleteIncome'
-    }),
+    ...mapActions(['fetchExpenses', 'fetchIncomes']),
     async fetchData() {
       try {
         await Promise.all([this.fetchExpenses(), this.fetchIncomes()]);
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('Error:', error);
+        this.error = 'Failed to load data. Please try again later.';
       }
+    },
+    logout() {
+      localStorage.removeItem('username');
+      this.$router.push('/login');
     }
   }
 };
@@ -70,6 +62,17 @@ export default {
   font-family: 'Roboto', sans-serif;
   color: #333;
   padding: 20px;
+}
+
+.black-theme {
+  background-color: black;
+  color: white;
+}
+
+.forms-container {
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 2rem;
 }
 
 h1 {
@@ -106,6 +109,13 @@ button:hover {
 button:active {
   background-color: #006270;
   transform: translateY(0);
+}
+
+.forms-container {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .forms-container > *:hover {

@@ -2,12 +2,16 @@
   <div v-if="show" class="modal-overlay">
     <div class="modal">
       <h2>Confirm Account Deletion</h2>
-      <p>Please enter your password to confirm:</p>
-      <input type="password" v-model="passwordForDeletion" class="input" />
-      <div class="modal-actions">
-        <button @click="deleteAccount" class="py-2 px-4 bg-red-600 text-white rounded-md">Confirm</button>
-        <button @click="closeModal" class="py-2 px-4 bg-gray-600 text-white rounded-md">Cancel</button>
-      </div>
+      <form @submit.prevent="deleteAccount">
+        <div class="form-group">
+          <label for="password-for-deletion">Password</label>
+          <input type="password" id="password-for-deletion" v-model="passwordForDeletion" required />
+        </div>
+        <div class="button-group">
+          <button type="submit" class="primary-button">Confirm</button>
+          <button type="button" class="secondary-button" @click="closeModal">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -29,23 +33,10 @@ export default {
   },
   methods: {
     async deleteAccount() {
-      const clientsId = localStorage.getItem('id');
       try {
-        const response = await fetch(`http://localhost:8080/api/clients/delete/${clientsId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${this.passwordForDeletion}`
-          }
-        });
-        if (response.ok) {
-          localStorage.removeItem('id');
-          localStorage.removeItem('username');
-          await this.$router.push('/');
-        } else {
-          throw new Error('Network response was not ok.');
-        }
+        this.$emit('delete-account', this.passwordForDeletion);
       } catch (error) {
-        console.error('Error deleting account:', error);
+        alert('Failed to delete account');
       }
     },
     closeModal() {
@@ -96,17 +87,56 @@ h2 {
   color: #333;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.input {
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+input {
   width: 100%;
   padding: 10px;
-  margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.primary-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+  background-color: #0056b3;
+}
+
+.secondary-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.secondary-button:hover {
+  background-color: #5a6268;
 }
 </style>

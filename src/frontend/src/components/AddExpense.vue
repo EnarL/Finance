@@ -1,56 +1,45 @@
 <template>
   <div class="form-card">
     <h2>Add Expense</h2>
-    <input v-model="amount" type="number" placeholder="Amount" />
-    <input v-model="category" type="text" placeholder="Category" />
-    <input v-model="description" type="text" placeholder="Description" />
-    <input v-model="date" type="date" placeholder="Date" />
-    <button @click="addExpense">Add Expense</button>
+    <form @submit.prevent="addExpense">
+      <input type="number" v-model="newExpense.amount" placeholder="Amount" required>
+      <input type="text" v-model="newExpense.category" placeholder="Category" required>
+      <input type="text" v-model="newExpense.description" placeholder="Description" required>
+      <input type="date" v-model="newExpense.date" placeholder="Date" required>
+      <button type="submit">Add Expense</button>
+    </form>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'AddExpense',
   data() {
     return {
-      amount: '',
-      category: '',
-      description: '',
-      date: new Date().toISOString().split('T')[0], // Default to today's date
-      username: localStorage.getItem('username')
+      newExpense: {
+        amount: null,
+        category: '',
+        description: '',
+        date: new Date().toISOString().split('T')[0],
+      }
     };
   },
   methods: {
     addExpense() {
-      if (!this.date) {
-        alert('Please enter a valid date.');
-        return;
-      }
-      const newExpense = {
-        amount: this.amount,
-        category: this.category,
-        description: this.description,
-        date: this.date,
-        username: this.username
+      this.$emit('add-expense', this.newExpense);
+      this.resetNewExpense();
+    },
+    resetNewExpense() {
+      this.newExpense = {
+        amount: null,
+        category: '',
+        description: '',
+        date: new Date().toISOString().split('T')[0],
       };
-      fetch('http://localhost:8080/api/expenses/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newExpense)
-      })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Expense added:', data);
-
-          })
-          .catch(error => {
-            console.error('Error adding expense:', error);
-          });
     }
   }
 }
+
 </script>
 
 <style scoped>
@@ -91,6 +80,7 @@ button {
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
+  max-width:200px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }

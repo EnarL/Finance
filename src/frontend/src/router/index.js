@@ -6,6 +6,8 @@ import Settings from "../views/Settings.vue";
 import Monthly from "../views/Monthly.vue";
 import Expenses from "../views/Expenses.vue";
 import Incomes from "../views/Incomes.vue";
+
+
 const routes = [
     {
         path: '/',

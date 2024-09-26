@@ -7,8 +7,7 @@
       <li><a href="/expenses">Expenses</a></li>
     </ul>
   </nav>
-  <div :class="['dashboard', { 'black-theme': isBlackTheme }]">
-    <button @click="toggleTheme" style="color:white;background-color:#007bff;width:70px;margin:0 auto; display:flex;">Switch Theme</button>
+  <div :class="['dashboard']">
     <h1>Hi, {{ username }}</h1>
     <div class="forms-container">
       <AddExpense @add-expense="addExpense"></AddExpense>
@@ -21,7 +20,9 @@
     <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
+
 <script>
+import { mapState, mapActions } from 'vuex';
 import AddExpense from '@/components/AddExpense.vue';
 import AddIncome from '@/components/AddIncome.vue';
 import ChartsContainer from '@/components/ChartsContainer.vue';
@@ -35,145 +36,39 @@ export default {
     AddExpense,
     AddIncome,
     ChartsContainer,
-
   },
-  data() {
-    return {
-      expenses: [],
-      incomes: [],
-      loading: true,
-      error: null,
-      username: localStorage.getItem('username'),
-      id: localStorage.getItem('id'),
-      isBlackTheme: JSON.parse(localStorage.getItem('isBlackTheme')) || false,
-    };
+  computed: {
+    ...mapState({
+      expenses: state => state.expenses.expenses,
+      incomes: state => state.incomes.incomes,
+      loading: state => state.expenses.loading || state.incomes.loading,
+      error: state => state.expenses.error || state.incomes.error,
+      username: state => state.user.username,
+      id: state => state.user.id,
+      token: state => state.user.token
+    })
   },
   mounted() {
     this.fetchData();
   },
   methods: {
-    fetchData() {
-      this.loading = true;
-      this.error = null;
-      Promise.all([this.fetchExpensesData(), this.fetchIncomeData()])
-          .then(() => {
-            this.loading = false;
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            this.error = 'Failed to load data. Please try again later.';
-            this.loading = false;
-          });
-    },
-    async fetchExpensesData() {
-      const username = this.username;
+    ...mapActions({
+      fetchExpenses: 'expenses/fetchExpenses',
+      fetchIncomes: 'incomes/fetchIncomes',
+      addExpense: 'expenses/addExpense',
+      addIncome: 'incomes/addIncome',
+      deleteExpense: 'expenses/deleteExpense',
+      deleteIncome: 'incomes/deleteIncome'
+    }),
+    async fetchData() {
       try {
-        const response = await fetch(`http://localhost:8080/api/expenses/findall?username=${username}`);
-        if (!response.ok) throw new Error('Failed to fetch expenses');
-        this.expenses = await response.json();
+        await Promise.all([this.fetchExpenses(), this.fetchIncomes()]);
       } catch (error) {
-        console.error('Error fetching expenses:', error);
-        throw error;
+        console.error('Failed to fetch data:', error);
       }
-    },
-    async fetchIncomeData() {
-      const username = this.username;
-      try {
-        const response = await fetch(`http://localhost:8080/api/incomes/findall?username=${username}`);
-        if (!response.ok) throw new Error('Failed to fetch incomes');
-        this.incomes = await response.json();
-      } catch (error) {
-        console.error('Error fetching incomes:', error);
-        throw error;
-      }
-    },
-    addExpense(newExpense) {
-      const username = this.username;
-      const expenseWithUser = { ...newExpense, username };
-      fetch('http://localhost:8080/api/expenses/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(expenseWithUser)
-      })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            this.expenses.push(data);
-            this.$store.dispatch('addNotification', `You just added expense: ${data.amount}`);
-          })
-          .catch(error => {
-            console.error('Error adding expense:', error);
-          });
-    },
-    addIncome(newIncome) {
-      const username = this.username;
-      const incomeWithUser = { ...newIncome, username };
-      fetch('http://localhost:8080/api/incomes/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(incomeWithUser)
-      })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            this.incomes.push(data);
-          })
-          .catch(error => {
-            console.error('Error adding income:', error);
-          });
-    },
-    deleteExpense(expenseId) {
-      fetch(`http://localhost:8080/api/expenses/delete/${expenseId}`, {
-        method: 'DELETE'
-      })
-          .then(response => {
-            if (response.ok) {
-              this.expenses = this.expenses.filter(expense => expense.id !== expenseId);
-            } else {
-              throw new Error('Network response was not ok.');
-            }
-          })
-          .catch(error => {
-            console.error('Error deleting expense:', error);
-          });
-    },
-    deleteIncome(incomeId) {
-      fetch(`http://localhost:8080/api/incomes/delete/${incomeId}`, {
-        method: 'DELETE'
-      })
-          .then(response => {
-            if (response.ok) {
-              this.incomes = this.incomes.filter(income => income.id !== incomeId);
-            } else {
-              throw new Error('Network response was not ok.');
-            }
-          })
-          .catch(error => {
-            console.error('Error deleting income:', error);
-          });
-    },
-    toggleTheme() {
-      this.isBlackTheme = !this.isBlackTheme;
-      localStorage.setItem('isBlackTheme', JSON.stringify(this.isBlackTheme));
-    },
-    logout() {
-      localStorage.removeItem('username');
-      this.$router.push('/login');
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -191,11 +86,6 @@ export default {
   font-family: 'Roboto', sans-serif;
   color: #333;
   padding: 20px;
-}
-
-.black-theme {
-  background-color: black;
-  color: white;
 }
 
 .forms-container {
@@ -226,7 +116,6 @@ input:focus {
 button {
   border: none;
   border-radius: 4px;
-
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
@@ -242,7 +131,6 @@ button:active {
 }
 
 .forms-container {
-
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 15px;
@@ -257,7 +145,6 @@ button:active {
 .sidebar {
   width: 200px;
   background-color: #006270;
-
   padding: 10px;
   height: 100vh;
   position: fixed;

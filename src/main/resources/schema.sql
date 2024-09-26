@@ -5,9 +5,7 @@ CREATE TABLE Client(
     password varchar(250) NOT NULL,
     email varchar(250) NOT NULL,
     role varchar(250) NOT NULL
-
 );
-
 
 CREATE TABLE Expense(
     id SERIAL PRIMARY KEY,
