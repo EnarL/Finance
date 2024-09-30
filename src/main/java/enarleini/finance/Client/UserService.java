@@ -1,7 +1,6 @@
 package enarleini.finance.Client;
 
 import enarleini.finance.config.JWTService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,7 +37,7 @@ public class UserService {
 
     public Map<String, String> verify(Users user) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        String token = "";
+        String token;
         if (authentication.isAuthenticated()) {
             token = jwtService.generateToken(user.getUsername());
         } else {

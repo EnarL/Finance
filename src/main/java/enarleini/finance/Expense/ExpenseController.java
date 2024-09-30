@@ -31,7 +31,7 @@ public class ExpenseController {
         return service.findAllByUsername(username);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).get().getUsername() == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
     @GetMapping("/{id}")
     Expenses findById(@PathVariable Long id){
         Optional<Expenses> user = service.findById(id);

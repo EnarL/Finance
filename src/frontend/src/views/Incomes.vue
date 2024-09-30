@@ -67,17 +67,6 @@ export default {
   padding: 20px;
 }
 
-.black-theme {
-  background-color: black;
-  color: white;
-}
-
-.forms-container {
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 2rem;
-}
-
 h1 {
   margin-bottom: 2rem;
   color: #006270;

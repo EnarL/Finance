@@ -1,8 +1,5 @@
 package enarleini.finance.Income;
 
-import enarleini.finance.Expense.ExpenseService;
-import enarleini.finance.Expense.Expenses;
-import enarleini.finance.config.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +29,7 @@ public class IncomeController {
         return service.findAllByUsername(username);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).get().getUsername() == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
     @GetMapping("/{id}")
     Incomes findById(@PathVariable Long id) {
         Optional<Incomes> user = service.findById(id);
