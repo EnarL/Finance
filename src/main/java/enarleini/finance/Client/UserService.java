@@ -14,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -48,13 +48,6 @@ public class UserService {
         response.put("token", token);
         return response;
     }
-    //String token = service.verify(user);
-    //        if (token == null) {
-    //            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
-    //        }
-    //        Map<String, String> response = new HashMap<>();
-    //        response.put("token", token);
-    //        return response;
 
     public List<Users> findAllClients() {
         return repository.findAll();

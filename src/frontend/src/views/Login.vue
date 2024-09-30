@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -35,41 +35,22 @@ export default {
     return {
       username: '',
       password: '',
-      errorMessage: '',
-      loading: false,
-      passwordFieldType: 'password',
-      token: ''
+      passwordFieldType: 'password'
     };
   },
+  computed: {
+    ...mapState('user', ['loading', 'errorMessage'])
+  },
   methods: {
-    async login()
-    {
-      this.loading = true;
+    ...mapActions('user', ['login']),
+    async login() {
       try {
-        const response = await axios.post('http://localhost:8080/login', {
-          username: this.username,
-          password: this.password
-        });
-        const token = response.data.token;
-        console.log(token);
-        localStorage.setItem('username', this.username);
-        localStorage.setItem('token', token)
-
-
-
-
+        await this.login({ username: this.username, password: this.password });
         await this.$router.push('/dashboard');
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Invalid username or password';
-        } else {
-          this.errorMessage = 'An error occurred';
-        }
-      } finally {
-        this.loading = false;
+        console.error('Login failed:', error);
       }
-    }
-,
+    },
     togglePasswordVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },

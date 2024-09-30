@@ -1,20 +1,11 @@
 <template>
-  <nav class="sidebar">
-    <ul>
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/Monthly">Monthly Overview</a></li>
-      <li><a href="/incomes">Incomes</a></li>
-      <li><a href="/expenses">Expenses</a></li>
-    </ul>
-  </nav>
   <div :class="['dashboard']">
     <h1>Hi, {{ username }}</h1>
     <div class="forms-container">
       <AddExpense @add-expense="addExpense"></AddExpense>
       <AddIncome @add-income="addIncome"></AddIncome>
     </div>
-    <TransactionList title="Expenses" :transactions="expenses" :delete-transaction="deleteExpense"></TransactionList>
-    <TransactionList title="Income" :transactions="incomes" :delete-transaction="deleteIncome"></TransactionList>
+
     <ChartsContainer :expenses="expenses" :incomes="incomes"></ChartsContainer>
     <div v-if="loading" class="loading">Loading...</div>
     <div v-if="error" class="error">{{ error }}</div>
@@ -26,13 +17,12 @@ import { mapState, mapActions } from 'vuex';
 import AddExpense from '@/components/AddExpense.vue';
 import AddIncome from '@/components/AddIncome.vue';
 import ChartsContainer from '@/components/ChartsContainer.vue';
-import TransactionList from "@/components/TransactionList.vue";
+
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Dashboard',
   components: {
-    TransactionList,
     AddExpense,
     AddIncome,
     ChartsContainer,
@@ -90,8 +80,12 @@ export default {
 
 .forms-container {
   justify-content: center;
+  display:inline-flex;
   gap: 20px;
   margin-bottom: 2rem;
+}
+.forms-container div{
+  width: 600px;
 }
 
 h1 {
@@ -142,31 +136,5 @@ button:active {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-.sidebar {
-  width: 200px;
-  background-color: #006270;
-  padding: 10px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-}
 
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 20px 0;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.sidebar ul li a:hover {
-  text-decoration: underline;
-}
 </style>

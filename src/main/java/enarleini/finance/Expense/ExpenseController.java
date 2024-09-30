@@ -56,7 +56,7 @@ public class ExpenseController {
     void delete(@PathVariable Long id) {
         service.delete(id);
     }
-@PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     @GetMapping("/sum")
     public BigDecimal sumExpensesByMonth(@RequestParam String username, @RequestParam String month){
         return service.sumExpensesByMonth(username, YearMonth.parse(month));

@@ -18,6 +18,12 @@ const mutations = {
         state.username = null;
         state.token = null;
         state.id = null;
+    },
+    SET_LOADING(state, loading){
+        state.loading = loading;
+    },
+    SET_ERROR_MESSAGE(state, errorMessage) {
+        state.errorMessage = errorMessage;
     }
 };
 
@@ -36,7 +42,7 @@ const actions = {
             if (error.response && error.response.status === 401) {
                 commit('SET_ERROR_MESSAGE', 'Invalid username or password');
             } else {
-                commit('SET_ERROR_MESSAGE', 'An error occurred. Please try again later.');
+                commit('SET_ERROR_MESSAGE', 'An error occurred');
             }
             throw error;
         } finally {

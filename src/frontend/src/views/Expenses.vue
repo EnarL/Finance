@@ -1,84 +1,51 @@
 <template>
-
-  <nav class="sidebar">
-    <ul>
-      <li><a href="/dashboard">Dashboard</a></li>
-      <li><a href="/Monthly">Monthly Overview</a></li>
-      <li><a href="/incomes">Incomes</a></li>
-      <li><a href="/expenses">Expenses</a></li>
-    </ul>
-  </nav>
-  <div :class="['dashboard', { 'black-theme': isBlackTheme }]">
-
-    <MonthlyBarChart :expenses="expenses" :incomes="incomes"></MonthlyBarChart>
-
+  <div :class="['dashboard']">
+    <TransactionList title="Expenses" :transactions="expenses" :delete-transaction="deleteExpense"></TransactionList>
   </div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex';
 
-
-import MonthlyBarChart from "@/components/LineChart.vue";
+import TransactionList from "@/components/TransactionList.vue";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Dashboard',
   components: {
-    MonthlyBarChart,
+    TransactionList,
+
   },
-  data() {
-    return {
-      expenses: [],
-      incomes: [],
-      loading: true,
-      error: null,
-      username: localStorage.getItem('username'),
-      isBlackTheme: JSON.parse(localStorage.getItem('isBlackTheme')) || false,
-    };
+  computed: {
+    ...mapState({
+      expenses: state => state.expenses.expenses,
+      incomes: state => state.incomes.incomes,
+      loading: state => state.expenses.loading || state.incomes.loading,
+      error: state => state.expenses.error || state.incomes.error,
+      username: state => state.user.username,
+      id: state => state.user.id,
+      token: state => state.user.token
+    })
   },
   mounted() {
     this.fetchData();
   },
   methods: {
-    fetchData() {
-      this.loading = true;
-      this.error = null;
-      Promise.all([this.fetchExpensesData(), this.fetchIncomeData()])
-          .then(() => {
-            this.loading = false;
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            this.error = 'Failed to load data. Please try again later.';
-            this.loading = false;
-          });
-    },
-    async fetchExpensesData() {
-      const username = this.username;
+    ...mapActions({
+      fetchExpenses: 'expenses/fetchExpenses',
+      fetchIncomes: 'incomes/fetchIncomes',
+      addExpense: 'expenses/addExpense',
+      addIncome: 'incomes/addIncome',
+      deleteExpense: 'expenses/deleteExpense',
+      deleteIncome: 'incomes/deleteIncome'
+    }),
+    async fetchData() {
       try {
-        const response = await fetch(`http://localhost:8080/expenses/findall?username=${username}`);
-        if (!response.ok) throw new Error('Failed to fetch expenses');
-        this.expenses = await response.json();
+        await Promise.all([this.fetchExpenses(), this.fetchIncomes()]);
       } catch (error) {
-        console.error('Error fetching expenses:', error);
-        throw error;
+        console.error('Failed to fetch data:', error);
       }
-    },
-    async fetchIncomeData() {
-      const username = this.username;
-      try {
-        const response = await fetch(`http://localhost:8080/incomes/findall?username=${username}`);
-        if (!response.ok) throw new Error('Failed to fetch incomes');
-        this.incomes = await response.json();
-      } catch (error) {
-        console.error('Error fetching incomes:', error);
-        throw error;
-      }
-    },
-    logout() {
-      localStorage.removeItem('username');
-      this.$router.push('/login');
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -97,17 +64,6 @@ export default {
   font-family: 'Roboto', sans-serif;
   color: #333;
   padding: 20px;
-}
-
-.black-theme {
-  background-color: black;
-  color: white;
-}
-
-.forms-container {
-  justify-content: center;
-  gap: 20px;
-  margin-bottom: 2rem;
 }
 
 h1 {
@@ -147,45 +103,8 @@ button:active {
   transform: translateY(0);
 }
 
-.forms-container {
 
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
 
-.forms-container > *:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
 
-.sidebar {
-  width: 200px;
-  background-color: #006270;
 
-  padding: 10px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 20px 0;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.sidebar ul li a:hover {
-  text-decoration: underline;
-}
 </style>
