@@ -19,14 +19,6 @@ public class ExpenseService {
         expenseRepository.deleteById(id);
     }
 
-    public void update(Expenses user, Long id) {
-        Expenses expense = expenseRepository.findById(id).orElseThrow();
-        expense.setAmount(user.getAmount());
-        expense.setCategory(user.getCategory());
-        expense.setDate(user.getDate());
-        expenseRepository.save(expense);
-    }
-
     public List<Expenses> findAllByUsername(String username) {
         return expenseRepository.findAllByUsername(username);
     }

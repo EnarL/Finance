@@ -3,10 +3,8 @@
     <TransactionList title="Income" :transactions="incomes" :delete-transaction="deleteIncome"></TransactionList>
   </div>
 </template>
-
 <script>
 import { mapState, mapActions } from 'vuex';
-
 import TransactionList from "@/components/TransactionList.vue";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -22,7 +20,6 @@ export default {
       loading: state => state.expenses.loading || state.incomes.loading,
       error: state => state.expenses.error || state.incomes.error,
       username: state => state.user.username,
-      id: state => state.user.id,
       token: state => state.user.token
     })
   },
@@ -48,16 +45,13 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 .dashboard {
   background-color: lightblue;
   text-align: center;
@@ -66,13 +60,11 @@ export default {
   color: #333;
   padding: 20px;
 }
-
 h1 {
   margin-bottom: 2rem;
   color: #006270;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
-
 input {
   display: block;
   width: 100%;
@@ -81,15 +73,12 @@ input {
   border-radius: 4px;
   transition: border-color 0.3s ease;
 }
-
 input:focus {
   border-color: #009394;
 }
-
 button {
   border: none;
   border-radius: 4px;
-
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
@@ -103,6 +92,4 @@ button:active {
   background-color: #006270;
   transform: translateY(0);
 }
-
-
 </style>

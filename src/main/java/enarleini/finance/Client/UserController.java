@@ -1,7 +1,6 @@
 package enarleini.finance.Client;
 
 import enarleini.finance.config.AuthenticatedUserService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,19 +17,23 @@ public class UserController {
     @Autowired
     AuthenticatedUserService authenticatedUserService;
 
+    //dont need PreAuthorize for register
+    @PostMapping("/register")
+    public Users register(@RequestBody Users user){
+        return service.register(user);
+    }
+    //dont need PreAuthorize for login
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody Users user)   {
+        return service.verify(user);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{username}/role")
     public void assignRoleToUser(@PathVariable String username, @RequestParam Roles role) {
         service.assignRoleToUser(username, role);
     }
-    @PostMapping("/register")
-    public Users register(@RequestBody Users user){
-        return service.register(user);
-    }
-    @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Users user)   {
-        return service.verify(user);
-    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/findall")
     public List<Users> findAll() {
@@ -54,12 +57,7 @@ public class UserController {
         return service.findClientByUsername(username);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/{id}")
-    public void update(@Valid @RequestBody Users client, @PathVariable Long id) {
-        service.updateClient(client, id);
-    }
+
 
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -27,12 +27,14 @@ public class ExpenseController {
     AuthenticatedUserService authenticatedUserService;
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     @GetMapping("/findall")
+    @ResponseStatus(HttpStatus.OK)
     List<Expenses> findAll(@RequestParam String username) {
         return service.findAllByUsername(username);
     }
 
     @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     Expenses findById(@PathVariable Long id){
         Optional<Expenses> user = service.findById(id);
         if (user.isEmpty()){
@@ -46,11 +48,8 @@ public class ExpenseController {
     void create(@Valid @RequestBody Expenses user) {
         service.create(user);
     }
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/{id}")
-    void update(@Valid @RequestBody Expenses user, @PathVariable Long id) {
-        service.update(user, id);
-    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete/{id}")
     void delete(@PathVariable Long id) {

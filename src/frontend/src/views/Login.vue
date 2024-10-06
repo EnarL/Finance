@@ -1,15 +1,15 @@
 <template>
   <div class="login-container">
     <h2>Login</h2>
-    <form @submit.prevent="login">
+    <form @submit.prevent="handleLogin">
       <div class="form-group">
         <label for="username">Username:</label>
-        <input type="text" v-model="username" id="username" required>
+        <input type="text" v-model="username" id="username" required />
       </div>
       <div class="form-group">
         <label for="password">Password:</label>
         <div class="password-input">
-          <input :type="passwordFieldType" v-model="password" id="password" required>
+          <input :type="passwordFieldType" v-model="password" id="password" required />
           <span @click="togglePasswordVisibility" class="toggle-password">
             {{ passwordFieldType === 'password' ? 'Show' : 'Hide' }}
           </span>
@@ -20,7 +20,10 @@
         <span v-else>Login</span>
       </button>
     </form>
+
+    <!-- Error message -->
     <p v-if="errorMessage">{{ errorMessage }}</p>
+
     <button class="register-button" @click="goToRegister">Register</button>
   </div>
 </template>
@@ -35,31 +38,41 @@ export default {
     return {
       username: '',
       password: '',
-      passwordFieldType: 'password'
+      passwordFieldType: 'password',
     };
   },
   computed: {
-    ...mapState('user', ['loading', 'errorMessage'])
+    // Map Vuex state to local computed properties
+    ...mapState('user', {
+      loading: state => state.loading,
+      errorMessage: state => state.errorMessage,
+    }),
   },
   methods: {
+    // Map Vuex actions to component methods
     ...mapActions('user', ['login']),
-    async login() {
+
+    async handleLogin() {
       try {
-        await this.login({ username: this.username, password: this.password });
+        await this.login({username: this.username, password: this.password});
+
         await this.$router.push('/dashboard');
       } catch (error) {
-        console.error('Login failed:', error);
+        console.error('Login failed:', error);  // Error is already handled in Vuex
       }
     },
+
     togglePasswordVisibility() {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
     },
+
     goToRegister() {
       this.$router.push('/register');
     }
   }
 };
 </script>
+
 <style scoped>
 .login-container {
   min-width: 400px;

@@ -1,7 +1,5 @@
 package enarleini.finance.Income;
 
-
-import enarleini.finance.Expense.Expenses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +16,6 @@ public class IncomeService {
 
     public void delete(Long id) {
         incomeRepository.deleteById(id);
-    }
-
-    public void update(Incomes user, Long id) {
-        Incomes income = incomeRepository.findById(id).orElseThrow();
-        income.setAmount(user.getAmount());
-        income.setSource(user.getSource());
-        income.setDate(user.getDate());
-        incomeRepository.save(income);
     }
 
     public List<Incomes> findAllByUsername(String username) {

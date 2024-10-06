@@ -1,7 +1,3 @@
-<script setup>
-
-</script>
-
 <template>
   <nav class="sidebar">
     <ul>

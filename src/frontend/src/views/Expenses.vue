@@ -21,7 +21,6 @@ export default {
       loading: state => state.expenses.loading || state.incomes.loading,
       error: state => state.expenses.error || state.incomes.error,
       username: state => state.user.username,
-      id: state => state.user.id,
       token: state => state.user.token
     })
   },

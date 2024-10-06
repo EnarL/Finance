@@ -28,16 +28,39 @@ const mutations = {
 };
 
 const actions = {
-    async login({ commit }, user) {
+    async register({ commit }, { username, email, password }) {
         commit('SET_LOADING', true);
-        commit('SET_ERROR_MESSAGE', '');
+            try{
+                await axios.post('http://localhost:8080/register',
+                    {
+                        username,
+                        email,
+                        password
+                    });
+                console.log('User registered');
+            } catch (error) {
+                if (error.response && error.response.status === 401) {
+                commit('SET_ERROR_MESSAGE', 'Invalid registration details');
+            } else {
+                commit('SET_ERROR_MESSAGE', 'An error occurred during registration');
+            }
+            throw error;
+        } finally {
+            commit('SET_LOADING', false);
+        }
+    },
+    async login({ commit }, { username, password }) {
+        commit('SET_LOADING', true); // Start loading
         try {
-            const response = await axios.post('http://localhost:8080/login', user);
-            const data = response.data;
-            localStorage.setItem('username', data.username);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('id', data.id);
-            commit('SET_USER', data);
+            const response = await axios.post('http://localhost:8080/login', {
+                username,
+                password,
+            });
+            const token = response.data.token;
+            localStorage.setItem('username', username);
+            localStorage.setItem('token', token);
+            commit('SET_USER', { username, token });
+
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 commit('SET_ERROR_MESSAGE', 'Invalid username or password');
@@ -49,6 +72,7 @@ const actions = {
             commit('SET_LOADING', false);
         }
     },
+
     logout({ commit }) {
         localStorage.removeItem('username');
         localStorage.removeItem('token');
@@ -89,18 +113,7 @@ const actions = {
             throw error;
         }
     },
-    async register({ state }, user) {
-        try {
-            await axios.post('http://localhost:8080/register', user, {
-                headers: {
-                    'Authorization': `Bearer ${state.token}`
-                }
-            });
-        } catch (error) {
-            console.error('Error registering user:', error);
-            throw error;
-        }
-    },
+
     async assignRole({ state }, { username, role }) {
         try {
             await axios.post(`http://localhost:8080/${username}/role`, null, {

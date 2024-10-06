@@ -14,4 +14,5 @@ public class AuthenticatedUserService {
         }
         return principal.toString();
     }
+
 }

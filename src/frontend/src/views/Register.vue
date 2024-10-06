@@ -1,17 +1,22 @@
 <template>
   <div class="form-card">
     <h2>Register</h2>
-    <form @submit.prevent="register">
+    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <form @submit.prevent="handleRegister">
       <input type="text" v-model="username" placeholder="Username" required>
       <input type="email" v-model="email" placeholder="Email" required>
       <input type="password" v-model="password" placeholder="Password" required>
-      <button type="submit">Register</button>
+      <button type="submit" :disabled="loading">Register</button>
     </form>
+
+    <button @click="goToLogin">Go to Login</button>
   </div>
 </template>
 
+
 <script>
-import axios from 'axios';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -21,33 +26,48 @@ export default {
       username: '',
       email: '',
       password: '',
-      errorMessage: ''
+      successMessage: '',
     };
   },
+  computed: {
+    ...mapState('user', {
+      loading: state => state.loading,
+      errorMessage: state => state.errorMessage,
+    }),
+  },
   methods: {
-    async register() {
-      const newUser = {
-        username: this.username,
-        email: this.email,
-        password: this.password
-      };
+    ...mapActions('user', ['register']),
+
+    async handleRegister() {
       try {
-        const response = await axios.post('http://localhost:8080/register', newUser);
-        console.log('User registered:', response.data);
-        // Reset form fields
+        await this.register({
+          username: this.username,
+          email: this.email,
+          password: this.password
+        });
+
+        this.successMessage = 'Registration successful! Please log in.';
+        this.errorMessage = '';
+
         this.username = '';
         this.email = '';
         this.password = '';
+
+
+        setTimeout(() => {
+          this.$router.push('/');
+        }, 3000);
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Invalid username or password';
-        } else {
-          this.errorMessage = 'An error occurred';
-        }
+        console.error('Registration failed:', error);
+        this.successMessage = '';
       }
+    },
+
+    goToLogin() {
+      this.$router.push('/');
     }
   }
-}
+};
 </script>
 
 <style scoped>

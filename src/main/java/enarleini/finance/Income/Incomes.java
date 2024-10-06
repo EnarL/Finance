@@ -2,6 +2,7 @@ package enarleini.finance.Income;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,9 +20,11 @@ public class Incomes{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @NotEmpty
+    @NotEmpty(message = "Username is required")
     String username;
+    @NotNull(message = "Amount is required")
     BigDecimal amount;
+    @NotEmpty(message = "Source is required")
     String source;
     LocalDate date;
 }
