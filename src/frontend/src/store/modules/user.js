@@ -15,9 +15,9 @@ const mutations = {
         state.id = user.id;
     },
     CLEAR_USER(state) {
-        state.username = null;
-        state.token = null;
-        state.id = null;
+        state.username = '';
+        state.token = '';
+        state.id = '';
     },
     SET_LOADING(state, loading){
         state.loading = loading;
@@ -73,7 +73,7 @@ const actions = {
         }
     },
 
-    logout({ commit }) {
+    async logout({ commit }) {
         localStorage.removeItem('username');
         localStorage.removeItem('token');
         localStorage.removeItem('id');
@@ -181,6 +181,7 @@ const actions = {
 };
 
 export default {
+
     namespaced: true,
     state,
     mutations,

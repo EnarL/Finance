@@ -16,9 +16,7 @@ const mutations = {
     SET_ERROR(state, error) {
         state.error = error;
     },
-    ADD_EXPENSE(state, expense) {
-        state.expenses.push(expense);
-    },
+
     DELETE_EXPENSE(state, expenseId) {
         state.expenses = state.expenses.filter(expense => expense.id !== expenseId);
     }
@@ -52,8 +50,6 @@ const actions = {
                 }
             });
             await dispatch('fetchExpenses')
-        //    doesnt work because the controller is void and therefore response is empty
-            //    commit('ADD_EXPENSE', response.data);
         } catch (error) {
             console.error('Error adding expense:', error);
         }

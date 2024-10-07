@@ -2,13 +2,15 @@
   <div class="user-icon">
     <span @click="toggleDropdown">{{ username }}</span>
     <div v-if="showDropdown" class="dropdown-menu">
-      <button @click="logout">Logout</button>
+      <button @click="handleLogout">Logout</button>
       <button @click="openSettings">Settings</button>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'UserIcon',
   data() {
@@ -18,14 +20,17 @@ export default {
     };
   },
   methods: {
+    ...mapActions('user', ['logout']),
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
     },
-    logout() {
-      localStorage.removeItem('username');
-      localStorage.removeItem('id');
-      localStorage.removeItem('token');
-      this.$router.push('/');
+    async handleLogout() {
+      try {
+        await this.logout();
+        await this.$router.push('/');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
     },
     openSettings() {
       this.$router.push('/settings');
