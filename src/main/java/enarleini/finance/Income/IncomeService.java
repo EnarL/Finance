@@ -1,10 +1,14 @@
 package enarleini.finance.Income;
 
+import enarleini.finance.Expense.Expenses;
+import enarleini.finance.Expense.ExpensesDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +29,24 @@ public class IncomeService {
     public Optional<Incomes> findById(Long id) {
         return incomeRepository.findById(id);
     }
-
+    public Incomes updateIncome (Long id, IncomesDto updatedIncomeDto) {
+        return incomeRepository.findById(id).map(expense -> {
+            if (updatedIncomeDto.getAmount() != null) {
+                expense.setAmount(updatedIncomeDto.getAmount());
+            }
+            if (updatedIncomeDto.getSource() != null) {
+                expense.setSource(updatedIncomeDto.getSource());
+            }
+            if (updatedIncomeDto.getDate() != null) {
+                try {
+                    expense.setDate(LocalDate.parse(updatedIncomeDto.getDate()));
+                } catch (DateTimeParseException e) {
+                    throw new RuntimeException("Invalid date format: " + updatedIncomeDto.getDate());
+                }
+            }
+            return incomeRepository.save(expense);
+        }).orElseThrow(() -> new RuntimeException("Expense not found with id " + id));
+    }
     public void create(Incomes user) {
         incomeRepository.save(user);
     }

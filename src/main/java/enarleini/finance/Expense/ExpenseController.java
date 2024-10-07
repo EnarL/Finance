@@ -48,6 +48,12 @@ public class ExpenseController {
     void create(@Valid @RequestBody Expenses user) {
         service.create(user);
     }
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Expenses updateExpense(@PathVariable Long id, @Valid @RequestBody ExpensesDto updatedExpenseDto) {
+        return service.updateExpense(id, updatedExpenseDto);
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)

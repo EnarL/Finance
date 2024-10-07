@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.math.BigDecimal;
@@ -40,7 +41,27 @@ public class ExpenseService {
                 .map(Expenses::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
+    public Expenses updateExpense(Long id, ExpensesDto updatedExpenseDto) {
+        return expenseRepository.findById(id).map(expense -> {
+            if (updatedExpenseDto.getAmount() != null) {
+                expense.setAmount(updatedExpenseDto.getAmount());
+            }
+            if (updatedExpenseDto.getCategory() != null) {
+                expense.setCategory(updatedExpenseDto.getCategory());
+            }
+            if (updatedExpenseDto.getDescription() != null) {
+                expense.setDescription(updatedExpenseDto.getDescription());
+            }
+            if (updatedExpenseDto.getDate() != null) {
+                try {
+                    expense.setDate(LocalDate.parse(updatedExpenseDto.getDate()));
+                } catch (DateTimeParseException e) {
+                    throw new RuntimeException("Invalid date format: " + updatedExpenseDto.getDate());
+                }
+            }
+            return expenseRepository.save(expense);
+        }).orElseThrow(() -> new RuntimeException("Expense not found with id " + id));
+    }
     public List<Expenses> findByUsernameAndDateBetween(String username, LocalDate startDate, LocalDate endDate) {
         return expenseRepository.findByUsernameAndDateBetween(username, startDate, endDate);
     }

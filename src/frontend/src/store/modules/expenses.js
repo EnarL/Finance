@@ -67,6 +67,19 @@ const actions = {
         } catch (error) {
             console.error('Error deleting expense:', error);
         }
+    },
+    async updateExpense({ rootState }, expense) {
+        try {
+            await axios.put(`http://localhost:8080/expenses/update/${expense.id}`, expense, {
+                headers: {
+                    'Authorization': `Bearer ${rootState.user.token}`,
+                    'Content-Type': 'application/json'
+
+                }
+            });
+        } catch (error) {
+            console.error('Error updating expense:', error);
+        }
     }
 };
 

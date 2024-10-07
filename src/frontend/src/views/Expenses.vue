@@ -17,8 +17,7 @@ export default {
   computed: {
     ...mapState({
       expenses: state => state.expenses.expenses,
-      incomes: state => state.incomes.incomes,
-      loading: state => state.expenses.loading || state.incomes.loading,
+      loading: state => state.expenses.loading,
       error: state => state.expenses.error || state.incomes.error,
       username: state => state.user.username,
       token: state => state.user.token
@@ -30,15 +29,13 @@ export default {
   methods: {
     ...mapActions({
       fetchExpenses: 'expenses/fetchExpenses',
-      fetchIncomes: 'incomes/fetchIncomes',
       addExpense: 'expenses/addExpense',
-      addIncome: 'incomes/addIncome',
       deleteExpense: 'expenses/deleteExpense',
-      deleteIncome: 'incomes/deleteIncome'
+
     }),
     async fetchData() {
       try {
-        await Promise.all([this.fetchExpenses(), this.fetchIncomes()]);
+        await Promise.all([this.fetchExpenses()]);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }

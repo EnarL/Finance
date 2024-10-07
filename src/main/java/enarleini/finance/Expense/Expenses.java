@@ -1,5 +1,6 @@
 package enarleini.finance.Expense;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -18,17 +19,25 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Expenses{
+    @JsonProperty("expense_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", insertable = false, nullable = false)
     Integer id;
-    @NotEmpty(message = "Username is required")
+    @JsonProperty("username")
+    @Column(name="username", nullable = false)
     String username;
-    @NotNull(message = "Amount is required")
+    @JsonProperty("amount")
+    @Column(name="amount", nullable = false)
     BigDecimal amount;
-    @NotEmpty(message = "Category is required")
+    @JsonProperty("category")
+    @Column(name="category", nullable = false)
     String category;
-    @NotEmpty(message = "Description is required")
+    @JsonProperty("description")
+    @Column(name="description", nullable = false)
     String description;
+    @JsonProperty("date")
+    @Column(name="date", nullable = false)
     LocalDate date;
 }
 

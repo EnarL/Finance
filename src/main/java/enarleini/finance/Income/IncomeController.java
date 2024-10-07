@@ -1,5 +1,7 @@
 package enarleini.finance.Income;
 
+import enarleini.finance.Expense.Expenses;
+import enarleini.finance.Expense.ExpensesDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +29,7 @@ public class IncomeController {
     List<Incomes> findAll(@RequestParam String username) {
         return service.findAllByUsername(username);
     }
-    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).get().getUsername() == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
     @GetMapping("/{id}")
     Incomes findById(@PathVariable Long id) {
         Optional<Incomes> user = service.findById(id);
@@ -35,6 +37,12 @@ public class IncomeController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
         }
         return user.get();
+    }
+    @PreAuthorize("hasRole('ADMIN') or @userService.findClientById(#id).getUsername() == authentication.principal.username")
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Incomes updateIncome(@PathVariable Long id, @Valid @RequestBody IncomesDto updatedIncomesDto) {
+        return service.updateIncome(id, updatedIncomesDto);
     }
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/add")
