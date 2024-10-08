@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExpensesDto {
 
-    @JsonProperty("expense_id")
+    @JsonProperty("id")
     private Integer id;
 
     @JsonProperty("username")
@@ -32,5 +32,5 @@ public class ExpensesDto {
     private String description;
 
     @JsonProperty("date")
-    private String date;  // Date as a string (e.g., "2024-10-08")
+    private String date;
 }

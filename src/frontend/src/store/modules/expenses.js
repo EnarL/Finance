@@ -16,7 +16,6 @@ const mutations = {
     SET_ERROR(state, error) {
         state.error = error;
     },
-
     DELETE_EXPENSE(state, expenseId) {
         state.expenses = state.expenses.filter(expense => expense.id !== expenseId);
     }
@@ -26,13 +25,13 @@ const actions = {
     async fetchExpenses({ commit, rootState }) {
         commit('SET_LOADING', true);
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             const response = await axios.get(`http://localhost:8080/expenses/findall?username=${rootState.user.username}`, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             commit('SET_EXPENSES', response.data);
-
         } catch (error) {
             commit('SET_ERROR', 'Failed to fetch expenses');
             console.error('Error fetching expenses:', error);
@@ -43,22 +42,24 @@ const actions = {
     async addExpense({ dispatch, rootState }, newExpense) {
         const expenseWithUser = { ...newExpense, username: rootState.user.username };
         try {
-             await axios.post('http://localhost:8080/expenses/add', expenseWithUser, {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
+            await axios.post('http://localhost:8080/expenses/add', expenseWithUser, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            await dispatch('fetchExpenses')
+            await dispatch('fetchExpenses');
         } catch (error) {
             console.error('Error adding expense:', error);
         }
     },
     async deleteExpense({ commit, rootState }, expenseId) {
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             const response = await axios.delete(`http://localhost:8080/expenses/delete/${expenseId}`, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             if (response.status === 204) {
@@ -70,11 +71,11 @@ const actions = {
     },
     async updateExpense({ rootState }, expense) {
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             await axios.put(`http://localhost:8080/expenses/update/${expense.id}`, expense, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-
                 }
             });
         } catch (error) {

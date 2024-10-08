@@ -2,8 +2,6 @@ package enarleini.finance.Expense;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +17,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Expenses{
-    @JsonProperty("expense_id")
+    @JsonProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", insertable = false, nullable = false)
+
     Integer id;
     @JsonProperty("username")
     @Column(name="username", nullable = false)

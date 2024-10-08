@@ -1,6 +1,6 @@
 <template>
   <div :class="['dashboard']">
-    <TransactionList title="Expenses" :transactions="expenses" :delete-transaction="deleteExpense"></TransactionList>
+    <TransactionList title="Expenses" :transactions="expenses" :isExpense="true" :delete-transaction="deleteExpense" @update="fetchExpenses"></TransactionList>
   </div>
 </template>
 <script>
@@ -56,7 +56,7 @@ export default {
 .dashboard {
   background-color: lightblue;
   text-align: center;
-  margin-left:200px;
+  margin-left: 200px;
   font-family: 'Roboto', sans-serif;
   color: #333;
   padding: 20px;
@@ -84,7 +84,6 @@ input:focus {
 button {
   border: none;
   border-radius: 4px;
-
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
@@ -98,8 +97,6 @@ button:active {
   background-color: #006270;
   transform: translateY(0);
 }
-
-
 
 
 

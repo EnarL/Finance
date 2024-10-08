@@ -1,7 +1,5 @@
 package enarleini.finance.Income;
 
-import enarleini.finance.Expense.Expenses;
-import enarleini.finance.Expense.ExpensesDto;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

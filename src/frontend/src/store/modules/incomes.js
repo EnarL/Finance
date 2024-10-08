@@ -28,13 +28,13 @@ const actions = {
     async fetchIncomes({ commit, rootState }) {
         commit('SET_LOADING', true);
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             const response = await axios.get(`http://localhost:8080/incomes/findall?username=${rootState.user.username}`, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            commit('SET_INCOMES', response.data)
-
+            commit('SET_INCOMES', response.data);
         } catch (error) {
             commit('SET_ERROR', 'Failed to fetch incomes');
             console.error('Error fetching incomes:', error);
@@ -42,35 +42,33 @@ const actions = {
             commit('SET_LOADING', false);
         }
     },
-    async addIncome({dispatch, rootState }, newIncome) {
+    async addIncome({ dispatch, rootState }, newIncome) {
         const incomeWithUser = { ...newIncome, username: rootState.user.username };
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             await axios.post('http://localhost:8080/incomes/add', incomeWithUser, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-          //  doesnt work because the controller is void and therefore response is empty
-            //commit('ADD_INCOME', response.data);
-        await dispatch('fetchIncomes')
+            await dispatch('fetchIncomes');
         } catch (error) {
             console.error('Error adding income:', error);
         }
     },
     async deleteIncome({ commit, rootState }, incomeId) {
         try {
+            const token = rootState.user.token; // Ensure token is retrieved correctly
             const response = await axios.delete(`http://localhost:8080/incomes/delete/${incomeId}`, {
                 headers: {
-                    'Authorization': `Bearer ${rootState.user.token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
-            if (response.status === 204){
+            if (response.status === 204) {
                 commit('DELETE_INCOME', incomeId);
             }
-
-
         } catch (error) {
             console.error('Error deleting income:', error);
         }

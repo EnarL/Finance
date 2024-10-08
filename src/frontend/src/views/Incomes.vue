@@ -1,6 +1,6 @@
 <template>
   <div :class="['dashboard']">
-    <TransactionList title="Income" :transactions="incomes" :delete-transaction="deleteIncome"></TransactionList>
+    <TransactionList title="Income" :transactions="incomes" :isExpense="false" :delete-transaction="deleteIncome" @update="fetchIncomes"></TransactionList>
   </div>
 </template>
 <script>

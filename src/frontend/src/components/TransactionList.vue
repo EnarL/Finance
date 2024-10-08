@@ -7,25 +7,41 @@
     <ul>
       <li v-for="transaction in filteredTransactions" :key="transaction.id">
         <span>{{ transaction.date }} - {{ transaction.category || transaction.source }}: {{ transaction.amount }}</span>
-        <button @click="deleteTransaction(transaction.id)">Delete</button>
+        <div class="buttons">
+          <button @click="deleteTransaction(transaction.id)">Delete</button>
+          <button @click="toggleEditTransaction(transaction)">Edit</button>
+        </div>
+        <div v-if="selectedTransaction && selectedTransaction.id === transaction.id">
+          <h3>Edit Transaction</h3>
+          <form @submit.prevent="updateTransaction">
+            <input v-if="isExpense" v-model="selectedTransaction.description" placeholder="Description" />
+            <input v-model="selectedTransaction.amount" placeholder="Amount" />
+            <input v-if="!isExpense" v-model="selectedTransaction.source" placeholder="Source" />
+            <button type="submit">Update</button>
+          </form>
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'TransactionList',
   props: {
     title: String,
     transactions: Array,
-    deleteTransaction: Function
+    deleteTransaction: Function,
+    isExpense: Boolean
   },
   data() {
     return {
       filterText: '',
       startDate: '',
-      endDate: ''
+      endDate: '',
+      selectedTransaction: null
     };
   },
   computed: {
@@ -42,6 +58,31 @@ export default {
 
         return matchesText && matchesDate;
       });
+    }
+  },
+  methods: {
+    toggleEditTransaction(transaction) {
+      if (this.selectedTransaction && this.selectedTransaction.id === transaction.id) {
+        this.selectedTransaction = null;
+      } else {
+        this.selectedTransaction = { ...transaction };
+      }
+    },
+    async updateTransaction() {
+      const endpoint = this.isExpense ? 'expenses' : 'incomes';
+      try {
+        await axios.put(`http://localhost:8080/${endpoint}/update/${this.selectedTransaction.id}`, this.selectedTransaction, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        console.log("Transaction updated successfully!");
+        this.selectedTransaction = null; // Clear the form
+        this.$emit('update'); // Emit an event to refresh the list
+      } catch (error) {
+        console.error("There was an error updating the transaction!", error);
+        console.log(this.selectedTransaction);
+      }
     }
   }
 }
@@ -71,13 +112,23 @@ export default {
 
 .transaction-list li {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
 }
 
 .transaction-list li:last-child {
   border-bottom: none;
+}
+
+.transaction-list span {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.transaction-list .buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .transaction-list button {

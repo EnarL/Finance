@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 
 public class Incomes{
-    @JsonProperty("income_id")
+    @JsonProperty("id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", insertable = false, nullable = false)
